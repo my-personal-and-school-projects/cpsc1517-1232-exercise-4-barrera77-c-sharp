@@ -1,0 +1,227 @@
+﻿@page "/RenoWalls"
+@using RenoSystem;
+@using System.IO;
+@using System.Text.RegularExpressions;
+@using System.Text
+
+<h3>Reno Wall Collection</h3>
+
+<!--Display feedback to the user-->
+@if (ErrorList.Count > 0)
+{    
+    <div class="alert alert-danger">
+        <p class="mb-3">Please fix the following issues:</p>
+       <ul>
+           @foreach (var error in ErrorList)
+            {
+                <li>Error: @error.Value</li>
+            }
+        </ul>       
+    </div>
+}
+else if (FeedbackMessage != null)
+{
+    <div class="alert alert-info">
+        @FeedbackMessage
+    </div>
+}
+
+<div class="container border mt-4">
+    <section id="section-wall-details" class="m-auto d-flex justify-content-center">
+        <fieldset>
+            <legend>Wall Details</legend>
+            <div>
+                <label class="col-3" for="wall-planId">
+                    Plan Id<span class="text-danger">*</span>
+                </label>
+                <input class="col-4" type="text" id="wall-planId" required @bind=PlanId />
+            </div>
+            <div>
+                <label class="col-3" for="wall-width">
+                    Width<span class="text-danger">*</span>
+                </label>
+                <input class="col-4" type="number" id="wall-width" required @bind=WallWidth />
+            </div>
+            <div>
+                <label class="col-3" for="wall-height">
+                    Height<span class="text-danger">*</span>
+                </label>
+                <input class="col-4" type="number" id="wall-height" required @bind=WallHeight/>
+            </div>
+            <div>
+                <label class="col-3" for="wall-color">
+                    Color<span class="text-danger">*</span>
+                </label>
+                <input class="col-2" type="color" id="wall-color" required @bind=WallColor/>
+            </div>
+        </fieldset>
+
+        <fieldset class="">
+            <legend>Opening (optional)</legend>
+            <div>
+                <label class="col-3" for="opening-type">
+                    Opening Type<span class="text-danger">*</span>
+                </label>
+                <select class="col-4" id="opening-type" @bind="OpeningType">
+                    <option selected value="">Select Opening Type</option>
+                    <option value="Door">Door</option>
+                    <option value="Window">Window</option>
+                    <option value="Closet">Closet</option>
+                    <option value="Panel">Panel</option>
+                </select>
+            </div>
+            <div>
+                <label class="col-3" for="opening-width">
+                    Width <span class="text-danger">*</span>
+                </label>
+                <input class="col-4" type="number" id="opening-width" required @bind=OpeningWidth/>
+            </div>
+            <div>
+                <label class="col-3" for="opening-height">
+                    Height<span class="text-danger">*</span>
+                </label>
+                <input class="col-4" type="number" id="opening-height" required @bind=OpeningHeight/>
+            </div>
+            <div>
+                <label class="col-3" for="opening-edging">
+                    Edging
+                </label>
+                <input class="col-4" type="text" id="opening-edging" required @bind=Edging/>
+            </div>
+        </fieldset>
+    </section>
+    <section id="menu-buttons" class="">
+        <div>
+            <button class="btn-primary" @onclick=SaveWallToFIle>Collect</button>
+        </div>
+        <div>
+            <button class="btn-secondary" @onclick=ResetFields>Clear</button>
+        </div>
+        <div class="d-flex">
+            <a id="btn-report" class="btn-info mb-0" href="RenoReport">
+                Report
+            </a>           
+        </div>
+    </section>
+</div>
+
+@code {
+    private string? FeedbackMessage { get; set; }
+    private Wall? NewWall { get; set; }
+    private string? PlanId { get; set; }
+    private int WallWidth { get; set; }
+    private int WallHeight { get; set; }
+    private string? WallColor { get; set; }   
+    private Opening? WallOpening { get; set; }    
+    private int OpeningWidth { get; set; }
+    private int OpeningHeight { get; set; }
+    private OpeningType? OpeningType { get; set; }
+    private int Edging { get; set; }
+    public Dictionary<string, string> ErrorList { get; set; } = new();
+
+    [Inject]
+    public IWebHostEnvironment WebHostEnvironment { get; set; } = default!;   
+    /// <summary>
+    /// Save new wall into the test data file using StreamWriter
+    /// </summary>
+    public void SaveWallToFIle()
+    {       
+        string csvFilePath = $@"{WebHostEnvironment.ContentRootPath}\Data\TestData.csv";
+
+        ErrorList.Clear();
+       // ValidateFields();
+
+        if (ErrorList.Count == 0 && OpeningType == null)
+        {            
+            //Create a new wall to append to the file
+            NewWall = new(PlanId, WallWidth, WallHeight, WallColor, WallOpening);
+
+            using (StreamWriter writter = new StreamWriter(csvFilePath, true))
+            {
+                writter.WriteLine(NewWall.ToString());
+            }
+
+            FeedbackMessage = "Data has been recorded";
+        }
+        else if (ErrorList.Count == 0 && OpeningType != null)
+        {
+            try
+            {
+                //Create the wall opening if data is provided
+                WallOpening = new(OpeningWidth, OpeningHeight, OpeningType, Edging);
+                //Create a new wall to append to the file
+                NewWall = new(PlanId, WallWidth, WallHeight, WallColor, WallOpening);
+
+                using (StreamWriter writter = new StreamWriter(csvFilePath, true))
+                {
+                    writter.WriteLine(NewWall.ToString());
+                }
+
+                FeedbackMessage = "Data has been recorded";
+            }
+            catch (ArgumentException e)
+            {
+                ErrorList.Add("Opening Limit", e.Message);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reset all field values
+    /// </summary>
+    public void ResetFields()
+    {
+        PlanId = "";
+        WallWidth = 0;
+        WallHeight = 0;
+        WallColor = "";
+        OpeningWidth = 0;
+        OpeningHeight = 0;
+        Edging = 0;
+        OpeningType = null;
+    }
+
+    /// <summary>
+    /// Validate user input adding all possible errors to the ErrorList
+    /// dictionary for later access and display
+    /// </summary>
+    public void ValidateFields()
+    {      
+
+        if (Utils.Utilities.IsNullEmptyOrWhiteSpace(PlanId))
+        {
+            ErrorList.Add("Wall PlanId", "Plan Id is required" );            
+        }
+
+        if (WallWidth <= 0 || WallWidth < 26)
+        {
+            ErrorList.Add("Wall Width", "Wall Width should be a positive non-zero and a minimum of 26 cm");
+        }
+
+        if (WallHeight <= 0 || WallHeight < 100)
+        {
+            ErrorList.Add("Wall Height", "Wall Height should be a positive non-zero and a minimum of 100 cm");
+        }    
+        if (Utils.Utilities.IsNullEmptyOrWhiteSpace(WallColor))
+        {
+            ErrorList.Add("Wall Color", "Please pick a wall color");
+        }
+
+        if (!Utils.Utilities.IsNullEmptyOrWhiteSpace(OpeningType.ToString()))
+        {
+            if (!Utils.Utilities.IsZeroPositive(OpeningWidth) || !Utils.Utilities.IsValidMinimum(OpeningWidth, 50))
+            {
+                ErrorList.Add("Opening Width", $"Opening Width value of {OpeningWidth} is invalid should be a positive non-zero and a minimum of 50 cm");
+            }
+            if (!Utils.Utilities.IsZeroPositive(OpeningHeight) || !Utils.Utilities.IsValidMinimum(OpeningHeight, 120))
+            {
+                ErrorList.Add("Opening Height", $"Opening Height value of {OpeningHeight} is invalid should be a positive non-zero and a minimum of 120 cm");
+            }
+            if (!Utils.Utilities.IsZeroPositive(Edging) || (Utils.Utilities.IsNonZeroPositive(Edging) && !Utils.Utilities.IsValidMinimum(Edging, 10))) //(Edging < 0 || (Edging > 0 && Edging < 10))
+            {
+                ErrorList.Add("Edging", $"Edging value of {Edging} should be zero or a minimum of 10 cm");
+            }
+        }       
+    }   
+   
+}

@@ -1,0 +1,68 @@
+﻿body {
+}
+
+h3 {
+    background: linear-gradient( 90deg, rgba(2, 0, 36, 1) 0%, rgba(68, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100% );
+    color: white;
+    padding: 1rem;
+}
+
+.btn {
+    border-radius: 14px;
+    width: 7rem;
+}
+
+
+
+#menu-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+#menu label {
+    
+}
+
+#job-supplies-menu, #job-supplies-display {
+    max-width: 70%;
+    margin: auto;    
+}
+#job-supplies-display {
+    margin-top: 2rem;
+}
+
+#job-supplies-menu fieldset {
+        padding: .5rem;
+    }
+
+#menu {
+    display: flex;
+    padding: .5rem 0;
+}
+
+#menu-select-job {
+    display: flex;
+}
+
+#menu-select-job label {
+    margin: auto;
+    margin-left: 0;
+    margin-right: 1rem;
+}
+
+#job {
+    max-width: 75%;
+}
+
+#table-alert {
+    margin: auto;
+
+}
+/*TODO fix responsiveness*/
+@media (max-width: 600px) {
+    job-supplies-menu fieldset {
+        display: flex;
+        flex-direction: column;
+    }
+}
+

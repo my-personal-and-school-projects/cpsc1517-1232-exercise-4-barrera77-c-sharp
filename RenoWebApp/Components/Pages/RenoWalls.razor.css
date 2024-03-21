@@ -1,0 +1,60 @@
+﻿body {
+}
+.container {    
+}
+
+h3 {
+     background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(68, 9, 121, 1) 35%,
+    rgba(0, 212, 255, 1) 100%
+  );
+     color: white;
+     padding: 1rem;
+}
+
+section {
+    display: flex;
+    flex-wrap:wrap;
+
+}
+
+#section-wall-details{
+    padding: 0 5rem 0 5rem;  
+    
+}
+
+#section-wall-details fieldset{
+    width: 50%;
+    max-width: 50%;
+
+}
+
+#section-wall-details label, input{
+    margin-bottom: 2px;    
+}
+
+#menu-buttons {
+    margin: auto;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    margin: 3rem 0 1rem 0; 
+}
+
+    #menu-buttons button{
+        border-radius: 10px;
+        width: 5rem;
+    }
+
+#btn-report {
+    border-radius: 10px;
+    width: 5rem;
+    padding: 2.5px 11px 2.5px 11px;
+    text-decoration: none;
+    margin: auto;
+    text-align: center;
+    color: white;
+}
+

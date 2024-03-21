@@ -1,0 +1,124 @@
+﻿@page "/RenoReport"
+@using RenoSystem;
+
+<h3>Reno Report</h3>
+
+@if (FeedbackMessage != null)
+{
+    <div class="alert alert-danger">
+        <p class="mb-3">Please fix the following issues:</p>
+        <ul>
+            @foreach (var error in ErrorList)
+            {
+                <li>@error.Key: @error.Value</li>
+            }
+        </ul>       
+    </div>
+} 
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Plan Id</th>
+            <th>Width (cm)</th>
+            <th>Height (cm)</th>
+            <th>Area (m<sup>2</sup>)</th>
+            <th>Opening</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var currentWall in Walls)
+        {
+            string formattedArea = "";
+            try
+            {
+                //Convert the area in m2 and format it
+                area = Double.Parse((currentWall.SurfaceArea).ToString());
+                formattedArea = (area / 10000).ToString("0.00");
+            } 
+            catch (Exception e)
+            {
+                FeedbackMessage = e.Message;
+                ErrorList.Add($"Record Error {ErrorList.Count + 1}", FeedbackMessage);
+            }
+            <tr>
+                <th>@currentWall.PlanId</th>
+                <th>@currentWall.Width</th>
+                <th>@currentWall.Height</th>
+                <th>@formattedArea</th>
+                <th>@if (currentWall.WallOpening != null)
+                    {
+                        @currentWall.WallOpening.Type;
+                    }
+                    else
+                    {
+                        @currentWall.WallOpening
+                    }
+                </th>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Wall>? Walls { get; set; }
+    private string? FeedbackMessage { get; set; }
+    private double area { get; set; }
+    public Dictionary<string, string> ErrorList { get; set; } = new();
+
+    [Inject]
+    public IWebHostEnvironment WebHostEnvironment { get; set; } = default!;
+
+    /// <summary>
+    /// Read file when the component gets initialized
+    /// </summary>
+    /// <returns></returns>
+    protected override Task OnInitializedAsync()
+    {
+        ReadFile();
+
+        return base.OnInitializedAsync();
+    }
+
+    /// <summary>
+    /// Method reads the information
+    /// </summary>
+    public void ReadFile()
+    {
+        Walls = new();
+
+        string csvFilePath = $@"{WebHostEnvironment.ContentRootPath}\Data\TestData.csv";
+
+        using (StreamReader reader = new StreamReader(csvFilePath))
+        {
+            try
+            {
+                if (reader.Peek() == -1)
+                {
+                    throw new IOException("There are no records in the file to display");
+                }
+                //reader.ReadLine();
+                string? currentLine;
+
+                while ((currentLine = reader.ReadLine()) != null)
+                {
+                    try
+                    {                                                                             
+                        Walls.Add(Wall.Parse(currentLine));
+                    }
+                    catch (FormatException e)
+                    {
+                        FeedbackMessage = e.Message;                       
+                        ErrorList.Add($"Record Error {ErrorList.Count + 1}", FeedbackMessage);
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                FeedbackMessage = e.Message;
+                ErrorList.Add($"Record Error {ErrorList.Count + 1}", FeedbackMessage);
+            }
+            reader.Close();
+        }
+    }
+
+}
