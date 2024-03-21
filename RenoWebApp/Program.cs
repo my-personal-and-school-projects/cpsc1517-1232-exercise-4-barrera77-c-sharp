@@ -8,7 +8,7 @@ using RenoSystemDB;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("RSDB2");
+var connectionString = builder.Configuration.GetConnectionString("RSDB");
 builder.Services.RSBackendDependencies(options =>
 options.UseSqlServer(connectionString));
 
