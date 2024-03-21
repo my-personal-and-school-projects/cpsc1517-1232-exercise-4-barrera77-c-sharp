@@ -12,15 +12,13 @@ h3 {
     width: 7rem;
 }
 
-
-
 #menu-buttons {
     display: flex;
     gap: 1rem;
 }
 
-#menu label {
-    
+.container {
+    margin-top: 2rem;
 }
 
 #job-supplies-menu, #job-supplies-display {
@@ -29,6 +27,7 @@ h3 {
 }
 #job-supplies-display {
     margin-top: 2rem;
+    margin-bottom: 1rem;
 }
 
 #job-supplies-menu fieldset {
@@ -56,13 +55,30 @@ h3 {
 
 #table-alert {
     margin: auto;
-
 }
+
+#table-wrapper {
+    max-height: 450px;
+    overflow-y: scroll;
+}
+
 /*TODO fix responsiveness*/
-@media (max-width: 600px) {
-    job-supplies-menu fieldset {
-        display: flex;
+@media (max-width: 1000px) {
+
+    #menu-select-job {
+        width: 100%;
+        margin-bottom: 1rem;
+
+    }
+    #menu {
+        display:flex ;
         flex-direction: column;
+    }
+   
+    #menu-buttons {
+        width: 100%;
+        margin: auto;
+        justify-content: space-between;
     }
 }
 

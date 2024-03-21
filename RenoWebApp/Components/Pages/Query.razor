@@ -5,27 +5,38 @@
 
 <h3>Query: Job Supplies</h3>
 
-<div class="alert alert-danger">
-    <p class="mb-3">Please fix the following issues:</p>
-    <ul>
-       Friggin Error
-    </ul>
-</div>
+@if (errorList.Count > 0)
+{
+    <div class="alert alert-danger">
+        <p class="mb-3">Please fix the following issues:</p>
+        <ul>
+            @foreach (var error in errorList)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+else if(feedback != null && feedback !="")
+{
+    <div class="alert alert-info">
+        @feedback
+    </div>
+}
 
 @* Display the jobs *@
 
 <div class="container border py-2">
     <section id="job-supplies-menu">
         <fieldset>
-            <legend >Job Supplies</legend>
+            @* <legend >Job Supplies</legend> *@
             @if (Jobs == null)
             {
                 <div id="menu">
                     <div>
                         <p>Loading Jobs. . .</p>
                     </div>
-                </div>
-            }
+                </div>            }
             else
             {
                 <div id="menu">
@@ -48,44 +59,45 @@
                             <button class="btn btn-primary" @onclick="HandleSelectedJob">Supplies?</button>
                         </div>
                         <div>
-                            <button class="btn btn-outline-primary" @onclick="ClearFields">Clear</button>
+                            <button class="btn btn-outline-primary" @onclick="ClearFields">Clear</button>                           
                         </div>
                     </div>
                 </div>
             }
         </fieldset>    
     </section>
-    <section id="job-supplies-display">
-        Render jobs
-        <table class="table table-striped">
+    <section id="job-supplies-display">       
+        <div id="table-wrapper">
+            <table id="jobs-table" class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Material</th>
-                        <th>Qty</th>
-                        <th>Cost ($)</th>
+                        <th class="col-8">Material</th>
+                        <th class="col-2 text-center">Qty</th>
+                        <th class="col-2 text-start">Cost ($)</th>
                     </tr>
                 </thead>
-       @if (Supplies != null && Supplies.Count > 0)
-        {            
-                <tbody>
-                    @foreach (var s in Supplies)
-                    {
-                        <tr>
-                            <td>@s.Material</td>
-                            <td>@s.Quantity</td>
-                            <td class="text-end">@($"{s.MaterialCost:C}")</td>
-                        </tr>
-                    }
-                </tbody>
-            }
-            else
-            {
-                <tr id="table-alert" class="alert alert-warning">
-                    <td colspan="3">
-                        <p class="text-center m-auto"><strong>Select a job to view supplies</strong></p>
-                    </td>
-                </tr>
-            }
-        </table>
+                @if (Supplies != null && Supplies.Count > 0)
+                {
+                    <tbody>
+                        @foreach (var s in Supplies)
+                        {
+                            <tr>
+                                <td>@s.Material</td>
+                                <td class="text-center">@s.Quantity</td>
+                                <td class="text-start">@($"{s.MaterialCost:C}")</td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+                else
+                {
+                    <tr id="table-alert" class="alert alert-warning">
+                        <td colspan="3">
+                            <p class="text-center m-auto"><strong>Select a job to view supplies</strong></p>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
     </section>
 </div>
