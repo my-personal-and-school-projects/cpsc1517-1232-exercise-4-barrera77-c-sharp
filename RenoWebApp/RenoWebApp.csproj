@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Lotto Repo\Exercise4\RenoSystemDB\RenoSystemDB.csproj" />
+    <ProjectReference Include="..\RenoSystemDB\RenoSystemDB.csproj" />
     <ProjectReference Include="..\RenoSystem\RenoSystem.csproj" />
   </ItemGroup>
 
